@@ -39,28 +39,172 @@ body{
 
       <!--Enter the Latitude-->
         <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Latitude:</span>
-  <input type="text" class="form-control" placeholder="Latitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text" >Enter Latitude:</span>
+  <input type="text" id="Lat1" placeholder="Latitude" >
 </div>
 
 <!--Enter the Longitude-->
 <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Longitude:</span>
-  <input type="text" class="form-control" placeholder="Longitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text" >Enter Longitude:</span>
+  <input type="text" id="Lon1" placeholder="Longitude" >
 </div>
 
 <!--Enter the Elevation Angle-->
 <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Elevation Angle:</span>
-  <input type="text" class="form-control" placeholder="Latitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text" >Enter Elevation Angle:</span>
+  <input type="text" id="El1" placeholder="Elevation Angle">
 </div>
 <br>
 <div class="progress">
   <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
-
-<!--Answers-->
 <br>
+<button style="width:100%" onclick="antenna_look_angle()" type="button" class="btn btn-dark">Calculate</button>
+<br><br>
+<!--Answers-->
+<!--Answer B-->
+<div id="all1" style="display:none">
+  <div class="input-group mb-3">
+  <span class="input-group-text" >B:</span>
+  <input type="text"  id="B1" class="form-control">
+</div>
+<!--Answer b-->
+  <div  class="input-group mb-3">
+  <span class="input-group-text" >b:</span>
+  <input type="text" id="b1" class="form-control">
+</div>
+<!--Answer A-->
+  <div  class="input-group mb-3">
+  <span class="input-group-text" >A:</span>
+  <input type="text" id="A1" class="form-control">
+</div>
+<!--Answer Az-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >Az:</span>
+  <input type="text" id="Az1" class="form-control">
+</div>
+<!--Answer d-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >d:</span>
+  <input type="text" id="d1" class="form-control">
+</div>
+<!--Answer El-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >El:</span>
+  <input type="text" id="Ele1" class="form-control">
+</div>
+</div>
+<script>
+function antenna_look_angle(){
+  /* Satellite Communication - Antenna Look Angles, Limits of Visibility
+	
+1. Antenna Look Angle: 
+The following information is needed to determine the look angles of geostationary orbit.
+
+1. Earth Station Latitude: λE
+2. Earth Station Longitude: ΦE
+3. Sub-Satellite Point’s Longitude: ΦSS
+4. ES: Position of Earth Station
+5. SS: Sub-Satellite Point
+6. S: Satellite
+7. d: Range from ES to S
+8. ζ: angle to be determined
+
+*/
+//var Lat = "35N";
+//var Lon = "100W";
+//var SS = "90W";
+
+var Lat = document.getElementById("Lat1").value;
+var Lon = document.getElementById("Lon1").value;
+var SS =  document.getElementById("El1").value;
+
+
+// Convert Degree to Radians
+function d2r(x){
+	return x * Math.PI/180;
+}
+// Convert Radians to Degree
+function r2d(x){
+	return x * 180/Math.PI;
+}
+
+Lat = Number(Lat.slice(0,Lat.length - 1));
+
+// Functions to find values
+
+function findB(Lon, SS){
+	return Lon - SS;
+}
+
+function findb(B,Lat){
+	return r2d(Math.acos(Math.cos(d2r(B)) * Math.cos(d2r(Lat))));
+}
+
+function findA(B,b){
+	return r2d(Math.asin(Math.sin(d2r(Math.abs(B))) / Math.sin(d2r(b))));
+}
+
+function findAz(Lat,B,A){
+	var LambdaE =  r2d(Lat);
+	var AzB = r2d(B);
+	if (LambdaE > 0 && AzB <0){
+		return 180 - A;
+	}
+	
+}
+
+
+function findd(b){
+	const R = 6371;
+	const Agso = 42164;
+	return Math.sqrt((R*R)+(Agso*Agso) - 2*R*Agso*Math.cos(d2r(b)));
+}
+
+function findEl(b,d){
+	return r2d(Math.acos(42164/d * Math.sin(d2r(b))));
+}
+
+// Main Program Starts From Here
+if (Lon[Lon.length - 1].toLowerCase() == "w"){
+	Lon = Number(-Lon.slice(0,Lon.length - 1));
+}
+else{
+	Lon = Number(-Lon.slice(0,Lon.length - 1));
+}
+
+if (SS[SS.length - 1].toLowerCase() == "w"){
+	SS = Number(-SS.slice(0,SS.length - 1));
+}
+else{
+	SS = Number(SS.slice(0,SS.length - 1));
+}
+
+
+var B = findB(Lon,SS);
+document.getElementById("B1").value = B+"°";
+
+
+var b = findb(B, Lat);
+document.getElementById("b1").value = b+"°";
+
+var A = findA(B,b);
+document.getElementById("A1").value = A+"°";
+
+
+var Az = findAz(Lat,B,A);
+document.getElementById("Az1").value = Az+"°";
+
+var d = findd(b);
+document.getElementById("d1").value = d.toString()+" km"
+
+var El = findEl(b,d);
+document.getElementById("Ele1").value = El+"°";
+
+document.getElementById("all1").style.display = "block";
+}
+
+</script>
 
       </div>
       <div class="modal-footer">
@@ -70,6 +214,9 @@ body{
   </div>
 </div>
     </div>
+
+<!--Limits of Visibility--><!--Limits of Visibility--><!--Limits of Visibility--><!--Limits of Visibility--><!--Limits of Visibility-->
+
     <div class="col">
     <div class="card" style="width: 35rem;">
   <img style="width:80%;height:80%" src="images/Visibility.jpg" class="card-img-top" alt="...">
@@ -90,28 +237,137 @@ body{
       <div class="modal-body">
          <!--Enter the Latitude-->
         <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Latitude:</span>
-  <input type="text" class="form-control" placeholder="Latitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text">Enter Latitude:</span>
+  <input type="text" id="Lat2" placeholder="Latitude">
 </div>
 
 <!--Enter the Longitude-->
 <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Longitude:</span>
-  <input type="text" class="form-control" placeholder="Longitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text" >Enter Longitude:</span>
+  <input type="text"  id="Lon2" placeholder="Longitude">
 </div>
 
 <!--Enter the Elevation Angle-->
 <div class="input-group mb-3">
-  <span class="input-group-text" id="basic-addon1">Enter Elevation Angle:</span>
-  <input type="text" class="form-control" placeholder="Latitude" aria-label="Username" aria-describedby="basic-addon1">
+  <span class="input-group-text">Enter Elevation Angle:</span>
+  <input type="text" id="El2" placeholder="Elevation Angle" >
 </div>
 <br>
 <div class="progress">
   <div class="progress-bar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
-
-<!--Answers-->
 <br>
+<button style="width:100%" onclick="limits_of_visibility()" type="button" class="btn btn-dark">Calculate</button>
+<!--Answers-->
+<br><br>
+<div id="all2" style="display:none">
+<!--Answer a min-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >a <sub>min</sub>:</span>
+  <input type="text" id="amin" class="form-control">
+</div>
+<!--Answer S-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >S:</span>
+  <input type="text" id="S" class="form-control">
+</div>
+<!--Answer b-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >b:</span>
+  <input type="text" id="b2" class="form-control">
+</div>
+<!--Answer B-->
+  <div class="input-group mb-3">
+  <span class="input-group-text" >B:</span>
+  <input type="text" id="B2" class="form-control">
+</div>
+<p id="st1">/<p>
+<p id="st2"></p>
+</div>
+<script>
+
+function limits_of_visibility(){
+  /*
+----------------------------------------------------------------------------------------------------
+								Limits of Visibility:
+----------------------------------------------------------------------------------------------------
+
+The east and west limits of geostationary are visible from any given Earth station. These limits are
+set by the geographic coordinates of the Earth station and antenna elevation.
+The lowest elevation is zero (in theory) but in practice, to avoid reception of excess noise from Earth.
+Some finite minimum value of elevation is issued. The earth station can see a satellite over a
+geostationary arc bounded by +- (81.30) about the earth station’s longitude.
+
+*/
+
+// Input: Lat,Lon,Elevation Angle.
+// Output: a_min, S,b,B, East and West Visibility
+
+// var Lat = "48.42N";
+// var Lon = "89.26W";
+// var El = 5;
+var Lat = document.getElementById("Lat2").value;
+var Lon = document.getElementById("Lon2").value;
+var El = Number(document.getElementById("El2").value);
+
+
+if (Lon[Lon.length - 1].toLowerCase() == "w"){
+	Lon = -Number(Lon.slice(0,Lon.length - 1));
+}
+else{
+	Lon = Number(Lon.slice(0,Lon.length - 1));
+}
+
+Lat = Number(Lat.slice(0,Lat.length - 1));
+
+
+
+
+
+//Conversion Functions
+function d2r(x){
+	return x * Math.PI/180;
+}
+
+function r2d(x){
+	return x * 180/Math.PI;
+}
+
+// Functions
+function finda_min(e){
+	return 90+e;
+}
+
+function findS(x){
+	return r2d(Math.asin(6371/42164 * Math.sin(d2r(x))));
+}
+
+function findb(a_min,S){
+	return 180-a_min-S;
+}
+
+function findB(b,Lat){
+	return r2d(Math.acos(Math.cos(d2r(b))/Math.cos(d2r(Lat))));
+}
+
+var a_min = finda_min(El);
+document.getElementById("amin").value  = a_min+"°";
+
+var S = findS(a_min);
+document.getElementById("S").value  = S+"°";
+
+var b = findb(a_min,S);
+document.getElementById("b2").value  = b+"°";
+
+var B = findB(b,Lat);
+document.getElementById("B2").value  = B+"°";
+
+
+document.getElementById("all2").style.display = "block";
+document.getElementById("st1").innerHTML = "The satellite limit east of the earth station is at"+(Lon+B).toString()+"°"
+document.getElementById("st2").innerHTML = "The satellite limit west of the earth station is at"+(Lon-B).toString()+"°"
+}
+</script>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
@@ -125,8 +381,8 @@ body{
   <br>
   <h1 class="text-center" style="color:white">Made by Nilesh Ohol</h1>
   <div class="container" align ="center">
-  <a href="https://www.linkedin.com/in/nilesh-ohol/"><img style="height:5%;width:5%" src="images/Linkedin.jpg" alt=""/></a>
-  <a href="https://github.com/nileshredz"><img style="height:5%;width:10%" src="images/GitHub_Logo_White.png" alt=""/></a>
+  <a href="https://www.linkedin.com/in/nilesh-ohol/"><img style="height:10%;width:7%" src="images/Linkedin.jpg" alt=""/></a>
+  <a href="https://github.com/nileshredz"><img style="height:10%;width:15%" src="images/GitHub_Logo_White.png" alt=""/></a>
   </div>
 
 
