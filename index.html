@@ -21,8 +21,13 @@ body{
     <div class="card" style="width: 35rem;">
   <img style="width:80%;height:80%" src="images/Elevation Angle.jpg" class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Antenna Look Angle</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <h5 class="card-title"><strong><u>Antenna Look Angle</u></strong></h5>
+    <p class="card-text">The look angles for the ground station antenna are Azimuth (Az) and Elevation (El) angles. They are
+required at the antenna so that it points directly at the satellite. Look angles are calculated by
+considering the elliptical orbit. </p>
+<p>These angles change in order to track the satellite.
+For geostationary orbit, these angles values does not change as the satellites are stationary with
+respect to earth. Thus large earth stations are used for commercial communications.</p>
     <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Modal1">Calculate Antenna Look Angle </a>
   </div>
 </div>
@@ -39,20 +44,20 @@ body{
 
       <!--Enter the Latitude-->
         <div class="input-group mb-3">
-  <span class="input-group-text" >Enter Latitude:</span>
+  <span class="input-group-text" >Enter Latitude(λE):</span>
   <input type="text" id="Lat1" placeholder="Latitude" >
 </div>
 
 <!--Enter the Longitude-->
 <div class="input-group mb-3">
-  <span class="input-group-text" >Enter Longitude:</span>
+  <span class="input-group-text" >Enter Longitude(ΦE):</span>
   <input type="text" id="Lon1" placeholder="Longitude" >
 </div>
 
 <!--Enter the Elevation Angle-->
 <div class="input-group mb-3">
-  <span class="input-group-text" >Enter Elevation Angle:</span>
-  <input type="text" id="El1" placeholder="Elevation Angle">
+  <span class="input-group-text" >Enter Point’s Longitude(ΦSS):</span>
+  <input type="text" id="SS" placeholder="Elevation Angle">
 </div>
 <br>
 <div class="progress">
@@ -93,6 +98,12 @@ body{
   <span class="input-group-text" >El:</span>
   <input type="text" id="Ele1" class="form-control">
 </div>
+<p><strong>Description:</strong></p>
+<p>B - The angle between the plane containing c and the plane containing a.</p>
+<p>A - Antenna Look Angle.</p>
+<p>Az - Azimuth Angle.</p>
+<p>El - Angle of Elevation.</p>
+<p></p>
 </div>
 <script>
 function antenna_look_angle(){
@@ -117,7 +128,7 @@ The following information is needed to determine the look angles of geostationar
 
 var Lat = document.getElementById("Lat1").value;
 var Lon = document.getElementById("Lon1").value;
-var SS =  document.getElementById("El1").value;
+var SS =  document.getElementById("SS").value;
 
 
 // Convert Degree to Radians
@@ -130,6 +141,8 @@ function r2d(x){
 }
 
 Lat = Number(Lat.slice(0,Lat.length - 1));
+
+
 
 // Functions to find values
 
@@ -148,9 +161,19 @@ function findA(B,b){
 function findAz(Lat,B,A){
 	var LambdaE =  r2d(Lat);
 	var AzB = r2d(B);
-	if (LambdaE > 0 && AzB <0){
+	if (LambdaE > 0 && AzB < 0){
 		return 180 - A;
 	}
+  else if (LambdaE <0 && AzB < 0){
+    return A;
+  }
+  else if (LambdaE <0 && AzB > 0){
+    return 360 - A;
+  }
+  else{
+    return 180 + A;
+  }
+
 	
 }
 
@@ -221,8 +244,12 @@ document.getElementById("all1").style.display = "block";
     <div class="card" style="width: 35rem;">
   <img style="width:80%;height:80%" src="images/Visibility.jpg" class="card-img-top" alt="...">
   <div class="card-body">
-    <h5 class="card-title">Limits of Visibility</h5>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+    <h5 class="card-title"><strong><u>Limits of Visibility</u></strong></h5>
+    <p class="card-text">The east and west limits of geostationary are visible from any given Earth station. These limits are
+set by the geographic coordinates of the Earth station and antenna elevation.
+The lowest elevation is zero (in theory) but in practice, to avoid reception of excess noise from Earth.</p>
+<p>Some finite minimum value of elevation is issued. The earth station can see a satellite over a
+geostationary arc bounded by +- (81.30) about the earth station’s longitude.</p>
     <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#Modal2">Calculate Limits of Visibility</a>
   </div>
 </div>
@@ -237,19 +264,19 @@ document.getElementById("all1").style.display = "block";
       <div class="modal-body">
          <!--Enter the Latitude-->
         <div class="input-group mb-3">
-  <span class="input-group-text">Enter Latitude:</span>
+  <span class="input-group-text">Enter Latitude(λE):</span>
   <input type="text" id="Lat2" placeholder="Latitude">
 </div>
 
 <!--Enter the Longitude-->
 <div class="input-group mb-3">
-  <span class="input-group-text" >Enter Longitude:</span>
+  <span class="input-group-text" >Enter Longitude(ΦE):</span>
   <input type="text"  id="Lon2" placeholder="Longitude">
 </div>
 
 <!--Enter the Elevation Angle-->
 <div class="input-group mb-3">
-  <span class="input-group-text">Enter Elevation Angle:</span>
+  <span class="input-group-text">Enter Elevation Angle(Elmin):</span>
   <input type="text" id="El2" placeholder="Elevation Angle" >
 </div>
 <br>
@@ -319,6 +346,7 @@ else{
 }
 
 Lat = Number(Lat.slice(0,Lat.length - 1));
+console.log(Lat,Lon);
 
 
 
@@ -364,8 +392,8 @@ document.getElementById("B2").value  = B+"°";
 
 
 document.getElementById("all2").style.display = "block";
-document.getElementById("st1").innerHTML = "The satellite limit east of the earth station is at"+(Lon+B).toString()+"°"
-document.getElementById("st2").innerHTML = "The satellite limit west of the earth station is at"+(Lon-B).toString()+"°"
+document.getElementById("st1").innerHTML = "The satellite limit east of the earth station is at "+(Lon+B).toString()+"°"
+document.getElementById("st2").innerHTML = "The satellite limit west of the earth station is at "+(Lon-B).toString()+"°"
 }
 </script>
       </div>
