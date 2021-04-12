@@ -1,7 +1,7 @@
 # Satellite-Communication-Project
-
+![Image of Sattelite](images/sat.jpg)
 ## This is a Project build for calculating the 
-* Antenna look angle and Limits. 
-* Visibility in Satellite Communication.
+- [x] Antenna look angle and Limits. 
+- [x] Visibility in Satellite Communication.
 
 ### Demo : http://nileshohol.me/Satellite-Communication-Project/
